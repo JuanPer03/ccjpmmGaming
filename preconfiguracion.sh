@@ -51,11 +51,23 @@ instalar "PyUDEV" sudo apt install -y python3 python3-pyudev
 instalar "optimizaciones para Raspberry Pi" sudo apt install -y libatlas-base-dev
 
 # 7. Crear estructura de directorio
+echo ""
+echo ""
+echo "==================================================="
 echo "Creando estructura de directorios..."
 mkdir -p /home/ccjpmmGaming
 mkdir -p /home/ccjpmmGaming/usb
+mkdir -p ~/.config/mednafen
 echo "Directorios creados con éxito!"
 echo ""
+
+# 8. Copiar configuracion inicial de mednafen y descomprimir la carpeta de la consola
+echo ""
+echo ""
+echo "==================================================="
+echo "Copiando archivos de consola..."
+cp ccjpmmGaming/mednafen.cfg ~/.config/mednafen/mednafen.cfg
+unzip ccjpmmGaming/Retroconsole.zip -d /home/ccjpmmGaming
 
 # Mensaje final
 echo "================================================="
