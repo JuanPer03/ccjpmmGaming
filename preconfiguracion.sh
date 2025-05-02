@@ -13,7 +13,13 @@ echo ""
 
 # Función para mostrar mensajes de instalación
 function instalar {
+    echo ""
+    echo ""
+    echo "==================================================="
     echo "Instalando $1..."
+    echo "==================================================="
+    echo ""
+    echo ""
     shift
     $@
     if [ $? -eq 0 ]; then
