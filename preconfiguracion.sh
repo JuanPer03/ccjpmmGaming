@@ -57,7 +57,7 @@ echo "==================================================="
 echo "Creando estructura de directorios..."
 mkdir -p /home/ccjpmmGaming
 mkdir -p /home/ccjpmmGaming/usb
-mkdir -p ~/.config/mednafen
+mkdir -p ~/.mednafen
 echo "Directorios creados con éxito!"
 echo ""
 
@@ -66,7 +66,7 @@ echo ""
 echo ""
 echo "==================================================="
 echo "Copiando archivos de consola..."
-cp ccjpmmGaming/mednafen.cfg ~/.config/mednafen/mednafen.cfg
+cp ccjpmmGaming/mednafen.cfg ~/.mednafen/mednafen.cfg
 unzip ccjpmmGaming/Retroconsole.zip -d /home/ccjpmmGaming
 
 # Mensaje final
