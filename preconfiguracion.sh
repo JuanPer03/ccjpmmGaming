@@ -38,8 +38,8 @@ instalar "dependencias de SDL para Pygame" sudo apt install -y libsdl2-dev libsd
 instalar "emulador Mednafen" sudo apt install -y mednafen
 
 # 5. Instalar paquetes Python
-instalar "Pygame" sudo apt install -y python3 pyhton3-pygame
-instalar "PyUDEV" sudo apt install -y python3 pyhton3-pyudev
+instalar "Pygame" sudo apt install -y python3 python3-pygame
+instalar "PyUDEV" sudo apt install -y python3 python3-pyudev
 
 # 6. Instalar dependencias adicionales para Raspberry Pi
 instalar "optimizaciones para Raspberry Pi" sudo apt install -y libatlas-base-dev
