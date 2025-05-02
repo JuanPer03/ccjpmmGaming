@@ -61,16 +61,35 @@ mkdir -p ~/.mednafen
 echo "Directorios creados con éxito!"
 echo ""
 
-# 8. Copiar configuracion inicial de mednafen y descomprimir la carpeta de la consola
+# 8. Descomprimir la carpeta de la consola
 echo ""
 echo ""
 echo "==================================================="
 echo "Copiando archivos de consola..."
-cp ccjpmmGaming/mednafen.cfg ~/.mednafen/mednafen.cfg
 unzip ccjpmmGaming/Retroconsole.zip -d /home/ccjpmmGaming
 
-# Mensaje final
+# 9. Copiar configuracion inicial de mednafen
+echo ""
+echo ""
+echo "==================================================="
+echo "Aplicado la configuracion de Mednafen...."
+# Obtener el nombre de usuario actual (no root)
+USERNAME=$(who am i | awk '{print $1}')
+# Ejecuta Mednafen como usuario normal en segundo plano
+sudo -u $USERNAME mednafen &
+# Guarda el PID (Process ID) del proceso Mednafen
+MEDNAFEN_PID=$!
+# Espera 10 segundos
+sleep 10
+# Cierra Mednafen usando su PID
+kill $MEDNAFEN_PID
+cp ccjpmmGaming/mednafen.cfg ~/.mednafen/mednafen.cfg
+
+# 10. Mostrar mensaje de salida
 echo "================================================="
 echo " PRECONFIGURACIÓN COMPLETADA SATISFACTORIAMENTE! "
 echo "================================================="
 echo ""
+echo "El sistema se reiniciará en 10 segundos..."
+sleep 10
+sudo reboot
