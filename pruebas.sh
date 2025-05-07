@@ -115,7 +115,18 @@ sleep 10
 kill $MEDNAFEN_PID
 cp ccjpmmGaming/mednafen.cfg ~/.mednafen/mednafen.cfg
 
-# 11. Mostrar mensaje de salida
+# 11. Configurar arranque silencioso
+echo ""
+echo ""
+echo "==================================================="
+echo "Configurando arranque silencioso..."
+# Hacer backup del archivo actual
+sudo cp /boot/cmdline.txt /boot/cmdline.txt.bak
+# Agregar parámetros de silencio
+sudo sed -i 's/$/ quiet logo.nologo/' /boot/cmdline.txt
+echo "Configuración de arranque silencioso aplicada!"
+
+# 12. Mostrar mensaje de salida
 echo "================================================="
 echo " INSTALACIÓN COMPLETADA SATISFACTORIAMENTE! "
 echo "================================================="
