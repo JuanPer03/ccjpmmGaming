@@ -31,10 +31,10 @@ function instalar {
     fi
 }
 
-# 1. Actualizar sistema base
+# 0. Actualizar sistema base
 instalar "paquetes base" sudo apt update && sudo apt upgrade -y
 
-# 2. Instalar git y clonar la informacion del repositorio de github
+# 1. Instalar git y clonar la informacion del repositorio de github
 instalar "Git y clonando repositorio" sudo apt install git -y
 sudo git clone -b Instalacion --single-branch https://github.com/JuanPer03/ccjpmmGaming.git
 
@@ -71,7 +71,7 @@ echo ""
 echo "==================================================="
 echo "Copiando archivos de consola..."
 unzip ccjpmmGaming/Retroconsole.zip -d /home/ccjpmmGaming
-
+:<< com
 # 9. Hacer que el programa de la consola se ejecute al encender
 echo ""
 echo ""
@@ -97,7 +97,7 @@ else
     echo "Configuración de cron agregada para ejecutar $PYTHON_SCRIPT al inicio."
 fi
 echo "¡Listo! configuracion de autoarranque hecha"
-
+com
 # 10. Copiar configuracion inicial de mednafen
 echo ""
 echo ""
@@ -115,16 +115,37 @@ sleep 10
 kill $MEDNAFEN_PID
 cp ccjpmmGaming/mednafen.cfg ~/.mednafen/mednafen.cfg
 
-# 11. Configurar arranque silencioso
+# 11. Configurar splash screen personalizado
 echo ""
 echo ""
 echo "==================================================="
-echo "Configurando arranque silencioso..."
-# Hacer backup del archivo actual
-sudo cp /boot/cmdline.txt /boot/cmdline.txt.bak
-# Agregar parámetros de silencio
-sudo sed -i 's/$/ quiet logo.nologo/' /boot/cmdline.txt
-echo "Configuración de arranque silencioso aplicada!"
+echo "Configurando splash screen personalizado..."
+
+# Instalar herramientas necesarias para manipular imágenes
+instalar "herramientas para splash screen" sudo apt install -y fbi imagemagick
+
+# Convertir la imagen del repositorio a formato ppm (si existe)
+if [ -f ccjpmmGaming/splash.png ]; then
+    echo "Convirtiendo imagen splash a formato ppm..."
+    convert ccjpmmGaming/splash.png -resize 640x480! ccjpmmGaming/splash.ppm
+    sudo cp ccjpmmGaming/splash.ppm /usr/share/plymouth/themes/pix/splash.ppm
+    
+    # Configurar plymouth para mostrar la imagen
+    sudo plymouth-set-default-theme pix
+    
+    # Modificar cmdline.txt para splash screen
+    echo "Modificando /boot/firmware/cmdline.txt para splash screen..."
+    sudo sed -i 's/console=tty1//g' /boot/firmware/cmdline.txt
+    sudo sed -i '1s/$/ quiet loglevel=0 logo.nologo fsck.mode=skip splash plymouth.ignore-serial-consoles consoleblank=0/' /boot/firmware/cmdline.txt
+    
+    # Configurar el kernel para mostrar splash
+    echo "FRAMEBUFFER=y" | sudo tee -a /etc/initramfs-tools/conf.d/splash
+    echo "Configuración de splash screen completada!"
+else
+    echo "No se encontró splash.png en el repositorio, usando configuración básica..."
+    # Configuración mínima sin imagen
+    sudo sed -i '1s/$/ quiet loglevel=0 logo.nologo fsck.mode=skip consoleblank=0/' /boot/firmware/cmdline.txt
+fi
 
 # 12. Mostrar mensaje de salida
 echo "================================================="
