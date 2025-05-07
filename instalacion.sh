@@ -31,10 +31,10 @@ function instalar {
     fi
 }
 
-# 1. Actualizar sistema base
+# 0. Actualizar sistema base
 instalar "paquetes base" sudo apt update && sudo apt upgrade -y
 
-# 2. Instalar git y clonar la informacion del repositorio de github
+# 1. Instalar git y clonar la informacion del repositorio de github
 instalar "Git y clonando repositorio" sudo apt install git -y
 sudo git clone -b Instalacion --single-branch https://github.com/JuanPer03/ccjpmmGaming.git
 
@@ -115,7 +115,21 @@ sleep 10
 kill $MEDNAFEN_PID
 cp ccjpmmGaming/mednafen.cfg ~/.mednafen/mednafen.cfg
 
-# 11. Mostrar mensaje de salida
+# 11. Modificar cmdline.txt para ocultar mensajes de arranque
+echo ""
+echo ""
+echo "==================================================="
+echo "Modificando /boot/firmware/cmdline.txt..."
+# Verifica si los parámetros ya existen en el archivo
+if ! grep -q "quiet loglevel=0 logo.nologo fsck.mode=skip" /boot/firmware/cmdline.txt; then
+    # Agrega los parámetros al final del archivo sin salto de línea
+    sudo sed -i '$s/$/ quiet loglevel=0 logo.nologo fsck.mode=skip/' /boot/firmware/cmdline.txt
+    echo "Parámetros agregados a cmdline.txt"
+else
+    echo "Los parámetros ya existen en cmdline.txt"
+fi
+
+# 12. Mostrar mensaje de salida
 echo "================================================="
 echo " INSTALACIÓN COMPLETADA SATISFACTORIAMENTE! "
 echo "================================================="
