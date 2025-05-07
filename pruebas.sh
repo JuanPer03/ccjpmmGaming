@@ -125,9 +125,9 @@ echo "Configurando splash screen personalizado..."
 instalar "herramientas para splash screen" sudo apt install -y fbi imagemagick
 
 # Convertir la imagen del repositorio a formato ppm (si existe)
-if [ -f ccjpmmGaming/splash.png ]; then
+if [ -f ccjpmmGaming/carga.png ]; then
     echo "Convirtiendo imagen splash a formato ppm..."
-    convert ccjpmmGaming/splash.png -resize 640x480! ccjpmmGaming/splash.ppm
+    convert ccjpmmGaming/carga.png -resize 640x480! ccjpmmGaming/splash.ppm
     sudo cp ccjpmmGaming/splash.ppm /usr/share/plymouth/themes/pix/splash.ppm
     
     # Configurar plymouth para mostrar la imagen
@@ -142,7 +142,7 @@ if [ -f ccjpmmGaming/splash.png ]; then
     echo "FRAMEBUFFER=y" | sudo tee -a /etc/initramfs-tools/conf.d/splash
     echo "Configuración de splash screen completada!"
 else
-    echo "No se encontró splash.png en el repositorio, usando configuración básica..."
+    echo "No se encontró carga.png en el repositorio, usando configuración básica..."
     # Configuración mínima sin imagen
     sudo sed -i '1s/$/ quiet loglevel=0 logo.nologo fsck.mode=skip consoleblank=0/' /boot/firmware/cmdline.txt
 fi
