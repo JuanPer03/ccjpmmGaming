@@ -34,6 +34,10 @@ function instalar {
 # 1. Actualizar sistema base
 instalar "paquetes base" sudo apt update && sudo apt upgrade -y
 
+# 2. Instalar git y clonar la informacion del repositorio de github
+instalar "Git y clonando repositorio" sudo apt install git -y
+sudo git clone -b Instalacion --single-branch https://github.com/JuanPer03/ccjpmmGaming.git
+
 # 2. Instalar dependencias esenciales
 instalar "Python y dependencias básicas" sudo apt install -y python3 python3-pip python3-dev
 
