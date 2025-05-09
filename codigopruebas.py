@@ -285,29 +285,53 @@ def show_copy_confirmation(screen, copied_files):
 # ==============================================
 
 def load_roms_and_folders(current_path):
-    """Carga las ROMs y carpetas del directorio actual"""
+    """Carga las ROMs de todas las subcarpetas agrupadas por consola"""
     items = []
+    console_map = {
+        '.gba': 'GBA',
+        '.nes': 'NES', 
+        '.smc': 'SNES',
+        '.sfc': 'SNES'
+    }
     
-    try:
-        # Primero agregamos las carpetas
-        for item in sorted(os.listdir(current_path)):
-            full_path = os.path.join(current_path, item)
-            if os.path.isdir(full_path):
-                items.append(('folder', item, full_path))
+    # Si estamos en la raíz, mostrar las ROMs agrupadas por consola
+    if current_path == ROM_DIR:
+        # Buscar ROMs en todas las subcarpetas
+        roms_by_console = {}
+        for root, dirs, files in os.walk(current_path):
+            for file in files:
+                for ext, console in console_map.items():
+                    if file.lower().endswith(ext):
+                        full_path = os.path.join(root, file)
+                        if console not in roms_by_console:
+                            roms_by_console[console] = []
+                        roms_by_console[console].append(('rom', file, full_path))
+                        break
         
-        # Luego los archivos ROM
-        for item in sorted(os.listdir(current_path)):
-            full_path = os.path.join(current_path, item)
-            if os.path.isfile(full_path) and item.lower().endswith((".smc", ".sfc", ".gba", ".nes")):
-                items.append(('rom', item, full_path))
-    except Exception as e:
-        print(f"Error al cargar contenido de {current_path}: {e}")
-        return [], current_path
+        # Ordenar las consolas y sus ROMs
+        for console in sorted(roms_by_console.keys()):
+            # Agregar encabezado de consola
+            items.append(('console', console, None))
+            # Agregar ROMs de esta consola (ordenadas alfabéticamente)
+            for rom in sorted(roms_by_console[console], key=lambda x: x[1]):
+                items.append(rom)
+    else:
+        # Comportamiento normal si no estamos en la raíz
+        try:
+            for item in sorted(os.listdir(current_path)):
+                full_path = os.path.join(current_path, item)
+                if os.path.isdir(full_path):
+                    items.append(('folder', item, full_path))
+                elif os.path.isfile(full_path) and item.lower().endswith((".smc", ".sfc", ".gba", ".nes")):
+                    items.append(('rom', item, full_path))
+        except Exception as e:
+            print(f"Error al cargar contenido de {current_path}: {e}")
+            return [], current_path
     
     return items, current_path
 
 def draw_menu(screen, items, selected, current_path, game_state):
-    """Dibuja el menú principal con estilo consistente al de resultados"""
+    """Dibuja el menú principal con las ROMs agrupadas por consola"""
     # Pre-renderizar fuentes
     font = pygame.font.Font(None, 32)
     title_font = pygame.font.Font(None, 30)
@@ -317,16 +341,16 @@ def draw_menu(screen, items, selected, current_path, game_state):
     # Dibujar fondo
     screen.fill(COLOR_BG)
     
-    # Área de título (parte superior) - igual que en resultados
+    # Área de título (parte superior)
     title_area = pygame.Rect(0, 0, 640, 60)
     pygame.draw.rect(screen, COLOR_SEARCH_BG, title_area)
     pygame.draw.line(screen, COLOR_HIGHLIGHT, (0, title_area.height), 
                     (640, title_area.height), 2)
     
-    # Título con ruta actual (similar al de búsqueda)
+    # Título con ruta actual
     rel_path = os.path.relpath(current_path, ROM_DIR)
     if rel_path == ".":
-        rel_path = "Menú Principal"
+        rel_path = "Todas las ROMs"
     title = title_font.render(f"Ubicación: {rel_path}", True, COLOR_HIGHLIGHT)
     screen.blit(title, (320 - title.get_width()//2, 20))
     
@@ -338,7 +362,7 @@ def draw_menu(screen, items, selected, current_path, game_state):
         no_results = font.render("No hay ROMs en esta carpeta", True, COLOR_TEXT)
         screen.blit(no_results, (320 - no_results.get_width()//2, 150))
     else:
-        # Mostrar items
+        # Mostrar items agrupados por consola
         y_pos = 80
         start_idx = max(0, selected - 5)
         end_idx = min(len(items), start_idx + 10)
@@ -350,26 +374,34 @@ def draw_menu(screen, items, selected, current_path, game_state):
             # Mostrar item
             color = COLOR_SELECTED if idx == selected else COLOR_TEXT
             prefix = "> " if idx == selected else "  "
-            text = font.render(f"{prefix}{name}", True, color)
-            screen.blit(text, (50, y_pos))
+            
+            if item_type == 'console':
+                # Mostrar encabezado de consola
+                console_header = console_font.render(f"--- {name} ---", True, COLOR_HIGHLIGHT)
+                screen.blit(console_header, (50, y_pos))
+            else:
+                # Mostrar ROM
+                text = font.render(f"{prefix}{name}", True, color)
+                screen.blit(text, (50, y_pos))
+            
             y_pos += 30
     
-    # Área de controles (parte inferior) - idéntica a la de resultados
+    # Área de controles (parte inferior)
     controls_area = pygame.Rect(0, 400, 640, 80)
     pygame.draw.rect(screen, COLOR_SEARCH_BG, controls_area)
     pygame.draw.line(screen, COLOR_HIGHLIGHT, (0, controls_area.y), 
                     (640, controls_area.y), 2)
     
-    # Título de controles (mismo estilo)
+    # Título de controles
     controls_title = controls_font.render("Controles del Menú", True, COLOR_HIGHLIGHT)
     screen.blit(controls_title, (320 - controls_title.get_width()//2, controls_area.y + 10))
     
-    # Organización de controles en dos filas (igual que en resultados)
+    # Organización de controles en dos filas
     a_text = controls_font.render("A : Seleccionar", True, COLOR_TEXT)
     b_text = controls_font.render("B : Atrás", True, COLOR_TEXT)
     nav_text = controls_font.render("↑/↓ : Navegar", True, COLOR_TEXT)
     search_text = controls_font.render("← : Buscar", True, COLOR_TEXT)
-    shutdown_text = controls_font.render("SELECT+START : Apagar", True, (255, 100, 100))  # Rojo
+    shutdown_text = controls_font.render("SELECT+START : Apagar", True, (255, 100, 100))
 
     # Primera fila de controles
     screen.blit(a_text, (75, controls_area.y + 30))
