@@ -525,12 +525,6 @@ def folder_menu(joystick, game_state):
                         screen = pygame.display.set_mode((640, 480), pygame.FULLSCREEN)
                         pygame.mouse.set_visible(False)
                 
-                elif event.button == 1:  # Botón B
-                    if len(game_state.path_stack) > 1:
-                        game_state.selection_history[game_state.current_path] = game_state.selected
-                        game_state.current_path = game_state.path_stack.pop()
-                        reload_items = True
-                
                 elif event.button == 6 or event.button == 7:  # SELECT o START
                     if joystick.get_button(6) and joystick.get_button(7):
                         shutdown_raspberry()
