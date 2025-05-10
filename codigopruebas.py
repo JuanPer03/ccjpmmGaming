@@ -285,9 +285,9 @@ def show_copy_confirmation(screen, copied_files):
 # ==============================================
 
 def load_game_cover(game_name):
-    """Carga la carátula del juego si existe"""
-    # Obtener el nombre del juego sin extensión
-    base_name = os.path.splitext(game_name)[0]
+    """Carga la carátula del juego si existe, buscando coincidencias parciales en el nombre"""
+    # Obtener el nombre base del juego sin extensión y en minúsculas
+    base_name = os.path.splitext(game_name)[0].lower()
     
     # Mapeo de extensiones a carpetas de consola
     console_map = {
@@ -305,18 +305,30 @@ def load_game_cover(game_name):
     else:
         return None  # No es una extensión de juego conocida
     
-    # Buscar archivo de carátula (puede tener diferentes extensiones)
+    # Buscar archivos de carátula que contengan el nombre base del juego
     extensions = ['.png', '.jpg', '.jpeg', '.webp']
-    for ext in extensions:
-        cover_path = os.path.join(cover_dir, f"{base_name}{ext}")
-        if os.path.exists(cover_path):
-            try:
-                # Cargar y devolver la imagen
-                image = pygame.image.load(cover_path)
-                return image
-            except pygame.error as e:
-                print(f"No se pudo cargar la carátula {cover_path}: {e}")
-                return None
+    
+    try:
+        # Listar todos los archivos en el directorio de carátulas
+        for filename in os.listdir(cover_dir):
+            filename_lower = filename.lower()
+            
+            # Verificar si el nombre base está contenido en el nombre del archivo
+            if base_name in filename_lower:
+                # Verificar que tenga una extensión válida
+                for ext in extensions:
+                    if filename_lower.endswith(ext):
+                        cover_path = os.path.join(cover_dir, filename)
+                        try:
+                            # Cargar y devolver la imagen
+                            image = pygame.image.load(cover_path)
+                            return image
+                        except pygame.error as e:
+                            print(f"No se pudo cargar la carátula {cover_path}: {e}")
+                            return None
+    except Exception as e:
+        print(f"Error al buscar carátulas: {e}")
+    
     return None
 
 def load_roms_and_folders(current_path):
