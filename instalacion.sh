@@ -71,7 +71,8 @@ echo ""
 echo "==================================================="
 echo "Copiando archivos de consola..."
 unzip ccjpmmGaming/Retroconsole.zip -d /home/ccjpmmGaming
-unzip ccjpmmGaming/RomsGBA.zip -d /home/ccjpmmGaming/Retroconsole/roms/GBA
+unzip ccjpmmGaming/RomsGBA1.zip -d /home/ccjpmmGaming/Retroconsole/roms/GBA
+unzip ccjpmmGaming/RomsGBA2.zip -d /home/ccjpmmGaming/Retroconsole/roms/GBA
 unzip ccjpmmGaming/RomsNES.zip -d /home/ccjpmmGaming/Retroconsole/roms/NES
 unzip ccjpmmGaming/RomsSNES.zip -d /home/ccjpmmGaming/Retroconsole/roms/SNES
 
