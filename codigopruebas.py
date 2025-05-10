@@ -480,16 +480,14 @@ def draw_menu(screen, items, selected, current_path, game_state):
     
     # Controles individuales
     a_text = controls_font.render("A : Seleccionar", True, COLOR_TEXT)
-    b_text = controls_font.render("B : Atrás", True, COLOR_TEXT)
     nav_text = controls_font.render("↑/↓ : Navegar", True, COLOR_TEXT)
     search_text = controls_font.render("← : Buscar", True, COLOR_TEXT)
     shutdown_text = controls_font.render("SELECT+START : Apagar", True, (255, 100, 100))
 
     # Primera fila de controles
-    screen.blit(a_text, (75, controls_area.y + 30))
-    screen.blit(b_text, (225, controls_area.y + 30))
-    screen.blit(nav_text, (325, controls_area.y + 30))
-    screen.blit(search_text, (475, controls_area.y + 30))
+    screen.blit(a_text, (125, controls_area.y + 30))
+    screen.blit(nav_text, (225, controls_area.y + 30))
+    screen.blit(search_text, (400, controls_area.y + 30))
     
     # Botón de apagado (centrado)
     screen.blit(shutdown_text, (320 - shutdown_text.get_width()//2, controls_area.y + 60))
