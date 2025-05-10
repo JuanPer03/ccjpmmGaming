@@ -418,7 +418,7 @@ def draw_menu(screen, items, selected, current_path, game_state):
                 prefix = "> " if idx == selected else "  "
                 text = font.render(f"{prefix}{name}", True, color)
                 screen.blit(text, (50, y_pos))
-                y_pos += 28  # Espaciado reducido para la fuente más pequeña
+                y_pos += 24  # Espaciado reducido para la fuente más pequeña
 
     # 4. Dibujar carátula (primer plano)
     if items and selected < len(items) and items[selected][0] == 'rom':
@@ -658,10 +658,10 @@ def search_roms(search_text, root_dir):
 def draw_search_results(screen, game_state):
     """Dibuja los resultados de búsqueda clasificados por consola"""
     # Pre-renderizar fuentes
-    font = pygame.font.Font(None, 24)
+    font = pygame.font.Font(None, 22)
     title_font = pygame.font.Font(None, 30)
     controls_font = pygame.font.Font(None, 26)
-    console_font = pygame.font.Font(None, 24)
+    console_font = pygame.font.Font(None, 28)
     
     # Dibujar fondo
     screen.fill(COLOR_BG)
@@ -708,7 +708,7 @@ def draw_search_results(screen, game_state):
             color = COLOR_SELECTED if idx == game_state.search_selected else COLOR_TEXT
             text = font.render(f"  {name}", True, color)
             screen.blit(text, (50, y_pos))
-            y_pos += 30
+            y_pos += 22
     
     # 4. Dibujar carátula (solo si hay resultados seleccionados)
     if game_state.search_results and game_state.search_selected < len(game_state.search_results):
