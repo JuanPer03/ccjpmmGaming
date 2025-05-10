@@ -710,6 +710,40 @@ def draw_search_results(screen, game_state):
             screen.blit(text, (50, y_pos))
             y_pos += 30
     
+    # 4. Dibujar carátula (solo si hay resultados seleccionados)
+    if game_state.search_results and game_state.search_selected < len(game_state.search_results):
+        cover_area = pygame.Rect(400, 70, 200, 150)  # Área de la carátula
+        
+        # Crear superficie semitransparente para el fondo
+        cover_bg = pygame.Surface((cover_area.width, cover_area.height), pygame.SRCALPHA)
+        cover_bg.fill((30, 30, 30, 200))  # Fondo oscuro semitransparente
+        screen.blit(cover_bg, cover_area.topleft)
+        
+        # Cargar y mostrar carátula
+        selected_item = game_state.search_results[game_state.search_selected]
+        cover_image = load_game_cover(selected_item[1])  # Usamos el nombre del archivo (índice 1)
+        
+        if cover_image:
+            # Escalar manteniendo relación de aspecto
+            img_ratio = min(cover_area.width/cover_image.get_width(), 
+                           cover_area.height/cover_image.get_height())
+            new_width = int(cover_image.get_width() * img_ratio)
+            new_height = int(cover_image.get_height() * img_ratio)
+            scaled_cover = pygame.transform.scale(cover_image, (new_width, new_height))
+            
+            # Centrar en el área
+            pos_x = cover_area.x + (cover_area.width - new_width) // 2
+            pos_y = cover_area.y + (cover_area.height - new_height) // 2
+            screen.blit(scaled_cover, (pos_x, pos_y))
+        else:
+            # Placeholder si no hay carátula
+            no_cover = font.render("Sin carátula", True, COLOR_TEXT)
+            screen.blit(no_cover, (cover_area.centerx - no_cover.get_width()//2, 
+                                 cover_area.centery - no_cover.get_height()//2))
+        
+        # Borde decorativo
+        pygame.draw.rect(screen, COLOR_HIGHLIGHT, cover_area, 2, border_radius=5)
+    
     # Área de controles con botón de apagado
     controls_area = pygame.Rect(0, 400, 640, 80)
     pygame.draw.rect(screen, COLOR_SEARCH_BG, controls_area)
@@ -737,7 +771,6 @@ def draw_search_results(screen, game_state):
         screen.blit(shutdown_text, (320 - shutdown_text.get_width()//2, controls_area.y + 60))
         
     pygame.display.update()
-
 def show_search_keyboard(screen, game_state):
     """Muestra el teclado virtual optimizado"""
     # Pre-renderizar fuentes
