@@ -12,13 +12,6 @@ ROM_DIR = "/home/ccjpmmGaming/Retroconsole/roms"
 SPLASH_IMAGE = "/home/ccjpmmGaming/Retroconsole/splash/logo.png"
 SPLASH_SOUND = "/home/ccjpmmGaming/Retroconsole/splash/sound.wav"
 EMULATOR_CMD = "/usr/games/mednafen"
-COVERS_DIR = "/home/ccjpmmGaming/Retroconsole/covers"
-COVER_MAPPING = {
-    '.gba': 'GBA',
-    '.nes': 'NES',
-    '.smc': 'SNES',
-    '.sfc': 'SNES'
-}
 
 # Paleta de colores
 COLOR_BG = (21, 67, 96)          # Fondo
@@ -291,31 +284,6 @@ def show_copy_confirmation(screen, copied_files):
 # Funciones relacionadas con el menú principal
 # ==============================================
 
-def load_game_cover(rom_name, rom_extension):
-    """Carga la carátula del juego desde la carpeta correspondiente o de internet"""
-    try:
-        # Primero intenta cargar desde la carpeta local
-        console = COVER_MAPPING.get(rom_extension.lower(), '')
-        if console:
-            # Buscar en la estructura de carpetas: covers/CONSOLA/NOMBRE.png
-            cover_path = os.path.join(COVERS_DIR, console, f"{os.path.splitext(rom_name)[0]}.png")
-            if os.path.exists(cover_path):
-                return pygame.image.load(cover_path)
-            
-            # Intentar con otros formatos de imagen
-            for ext in ['.jpg', '.jpeg', '.png']:
-                cover_path = os.path.join(COVERS_DIR, console, f"{os.path.splitext(rom_name)[0]}{ext}")
-                if os.path.exists(cover_path):
-                    return pygame.image.load(cover_path)
-        
-        # Si no se encuentra localmente, podrías implementar descarga desde internet aquí
-        # (requeriría conexión a internet y una API como IGDB o similar)
-        
-    except Exception as e:
-        print(f"Error cargando carátula: {e}")
-    
-    return None
-
 def load_roms_and_folders(current_path):
     """Carga las ROMs de todas las subcarpetas agrupadas por consola"""
     items = []
@@ -377,7 +345,7 @@ def draw_menu(screen, items, selected, current_path, game_state):
     title_area = pygame.Rect(0, 0, 640, 60)
     pygame.draw.rect(screen, COLOR_SEARCH_BG, title_area)
     pygame.draw.line(screen, COLOR_HIGHLIGHT, (0, title_area.height), 
-                   (640, title_area.height), 2)
+                    (640, title_area.height), 2)
     
     # Título con ruta actual
     rel_path = os.path.relpath(current_path, ROM_DIR)
@@ -399,38 +367,6 @@ def draw_menu(screen, items, selected, current_path, game_state):
         start_idx = max(0, selected - 5)
         end_idx = min(len(items), start_idx + 10)
         
-        # Verificar si el ítem seleccionado es una ROM y cargar su carátula
-        selected_item = items[selected] if 0 <= selected < len(items) else None
-        cover_image = None
-        
-        if selected_item and selected_item[0] == 'rom':
-            rom_name = selected_item[1]
-            rom_ext = os.path.splitext(rom_name)[1].lower()
-            cover_image = load_game_cover(rom_name, rom_ext)
-        
-        # Dividir la pantalla si hay carátula disponible
-        if cover_image:
-            # Área de lista (mitad izquierda)
-            list_area = pygame.Rect(0, title_area.height, 320, 300)
-            # Área de carátula (mitad derecha)
-            cover_area = pygame.Rect(320, title_area.height, 320, 300)
-            
-            # Dibujar carátula (escalada para que quepa en el área)
-            cover_scaled = pygame.transform.scale(cover_image, 
-                                                (cover_area.width - 20, cover_area.height - 20))
-            screen.blit(cover_scaled, (cover_area.x + 10, cover_area.y + 10))
-            
-            # Dibujar borde alrededor de la carátula
-            pygame.draw.rect(screen, COLOR_HIGHLIGHT, 
-                           (cover_area.x + 5, cover_area.y + 5, 
-                            cover_area.width - 10, cover_area.height - 10), 2)
-            
-            # Ajustar posición de la lista para que ocupe solo la mitad izquierda
-            list_width = 320
-        else:
-            # Sin carátula, usar todo el ancho
-            list_width = 640
-        
         for idx in range(start_idx, end_idx):
             item = items[idx]
             item_type, name, _ = item
@@ -450,12 +386,11 @@ def draw_menu(screen, items, selected, current_path, game_state):
             
             y_pos += 30
     
-    # Resto del código de draw_menu permanece igual...
     # Área de controles (parte inferior)
     controls_area = pygame.Rect(0, 400, 640, 80)
     pygame.draw.rect(screen, COLOR_SEARCH_BG, controls_area)
     pygame.draw.line(screen, COLOR_HIGHLIGHT, (0, controls_area.y), 
-                   (640, controls_area.y), 2)
+                    (640, controls_area.y), 2)
     
     # Título de controles
     controls_title = controls_font.render("Controles del Menú", True, COLOR_HIGHLIGHT)
@@ -478,6 +413,7 @@ def draw_menu(screen, items, selected, current_path, game_state):
     screen.blit(shutdown_text, (320 - shutdown_text.get_width()//2, controls_area.y + 60))
     
     return screen
+
 def folder_menu(joystick, game_state):
     """Menú principal de navegación optimizado"""
     screen = pygame.display.set_mode((640, 480), pygame.FULLSCREEN)
@@ -588,6 +524,12 @@ def folder_menu(joystick, game_state):
                         launch_game(item[2], joystick)
                         screen = pygame.display.set_mode((640, 480), pygame.FULLSCREEN)
                         pygame.mouse.set_visible(False)
+                
+                elif event.button == 1:  # Botón B
+                    if len(game_state.path_stack) > 1:
+                        game_state.selection_history[game_state.current_path] = game_state.selected
+                        game_state.current_path = game_state.path_stack.pop()
+                        reload_items = True
                 
                 elif event.button == 6 or event.button == 7:  # SELECT o START
                     if joystick.get_button(6) and joystick.get_button(7):
