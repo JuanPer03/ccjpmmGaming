@@ -368,7 +368,7 @@ def load_roms_and_folders(current_path):
 def draw_menu(screen, items, selected, current_path, game_state):
     """Dibuja el menú principal con carátulas superpuestas sobre la lista de ROMs"""
     # Configuración de fuentes
-    font = pygame.font.Font(None, 28)  # Fuente para las ROMs (tamaño reducido)
+    font = pygame.font.Font(None, 24)  # Fuente para las ROMs (tamaño reducido)
     title_font = pygame.font.Font(None, 30)  # Fuente para el título
     controls_font = pygame.font.Font(None, 26)  # Fuente para los controles
     console_font = pygame.font.Font(None, 28)  # Fuente para los encabezados de consola
@@ -658,7 +658,7 @@ def search_roms(search_text, root_dir):
 def draw_search_results(screen, game_state):
     """Dibuja los resultados de búsqueda clasificados por consola"""
     # Pre-renderizar fuentes
-    font = pygame.font.Font(None, 32)
+    font = pygame.font.Font(None, 24)
     title_font = pygame.font.Font(None, 30)
     controls_font = pygame.font.Font(None, 26)
     console_font = pygame.font.Font(None, 28)
