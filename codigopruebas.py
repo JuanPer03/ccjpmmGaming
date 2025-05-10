@@ -368,7 +368,7 @@ def load_roms_and_folders(current_path):
 def draw_menu(screen, items, selected, current_path, game_state):
     """Dibuja el menú principal con carátulas superpuestas sobre la lista de ROMs"""
     # Configuración de fuentes
-    font = pygame.font.Font(None, 24)  # Fuente para las ROMs (tamaño reducido)
+    font = pygame.font.Font(None, 24)  # Fuente para las ROMs
     title_font = pygame.font.Font(None, 30)  # Fuente para el título
     controls_font = pygame.font.Font(None, 26)  # Fuente para los controles
     console_font = pygame.font.Font(None, 28)  # Fuente para los encabezados de consola
@@ -399,10 +399,15 @@ def draw_menu(screen, items, selected, current_path, game_state):
             if selected >= len(items):
                 selected = 0
         
+        # Calcular espacio disponible y ajustar espaciado
+        item_height = 24  # Altura de cada item (ajustado al tamaño de fuente)
+        console_header_height = 28  # Altura de los encabezados de consola
+        max_items_visible = 13  # Número máximo de items visibles
+        
         # Mostrar items agrupados por consola
         y_pos = 80  # Posición vertical inicial
-        start_idx = max(0, selected - 5)  # Índice de inicio para el scroll
-        end_idx = min(len(items), start_idx + 10)  # Índice final para el scroll
+        start_idx = max(0, selected - (max_items_visible // 2))
+        end_idx = min(len(items), start_idx + max_items_visible)
         
         for idx in range(start_idx, end_idx):
             item_type, name, _ = items[idx]
@@ -411,14 +416,14 @@ def draw_menu(screen, items, selected, current_path, game_state):
                 # Encabezado de consola (no seleccionable)
                 text = console_font.render(f"--- {name} ---", True, COLOR_HIGHLIGHT)
                 screen.blit(text, (50, y_pos))
-                y_pos += 30
+                y_pos += console_header_height
             else:
                 # Item de ROM o carpeta (seleccionable)
                 color = COLOR_SELECTED if idx == selected else COLOR_TEXT
                 prefix = "> " if idx == selected else "  "
                 text = font.render(f"{prefix}{name}", True, color)
                 screen.blit(text, (50, y_pos))
-                y_pos += 24  # Espaciado reducido para la fuente más pequeña
+                y_pos += item_height
 
     # 4. Dibujar carátula (primer plano)
     if items and selected < len(items) and items[selected][0] == 'rom':
