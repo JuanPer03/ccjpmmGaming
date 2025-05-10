@@ -390,7 +390,7 @@ def draw_menu(screen, items, selected, current_path, game_state):
     screen.blit(title, (320 - title.get_width()//2, 20))
     
     # Área de carátula (parte superior derecha)
-    cover_area = pygame.Rect(400, 70, 200, 150)  # x, y, width, height
+    cover_area = pygame.Rect(450, 70, 150, 100)  # x, y, width, height
     
     # Cargar y mostrar carátula si el item seleccionado es una ROM
     if items and selected < len(items):
