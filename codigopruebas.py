@@ -393,6 +393,12 @@ def draw_menu(screen, items, selected, current_path, game_state):
         no_results = font.render("No hay ROMs en esta carpeta", True, COLOR_TEXT)
         screen.blit(no_results, (320 - no_results.get_width()//2, 150))
     else:
+        # Ajustar la selección si está en un encabezado no seleccionable
+        while selected < len(items) and items[selected][0] == 'console':
+            selected += 1
+            if selected >= len(items):
+                selected = 0
+        
         # Mostrar items agrupados por consola
         y_pos = 80  # Posición vertical inicial
         start_idx = max(0, selected - 5)  # Índice de inicio para el scroll
@@ -400,16 +406,16 @@ def draw_menu(screen, items, selected, current_path, game_state):
         
         for idx in range(start_idx, end_idx):
             item_type, name, _ = items[idx]
-            color = COLOR_SELECTED if idx == selected else COLOR_TEXT
-            prefix = "> " if idx == selected else "  "
             
             if item_type == 'console':
-                # Encabezado de consola
+                # Encabezado de consola (no seleccionable)
                 text = console_font.render(f"--- {name} ---", True, COLOR_HIGHLIGHT)
                 screen.blit(text, (50, y_pos))
                 y_pos += 30
             else:
-                # Item de ROM
+                # Item de ROM o carpeta (seleccionable)
+                color = COLOR_SELECTED if idx == selected else COLOR_TEXT
+                prefix = "> " if idx == selected else "  "
                 text = font.render(f"{prefix}{name}", True, color)
                 screen.blit(text, (50, y_pos))
                 y_pos += 28  # Espaciado reducido para la fuente más pequeña
@@ -507,6 +513,11 @@ def folder_menu(joystick, game_state):
             # Restaurar selección guardada para esta ruta
             if game_state.current_path in game_state.selection_history:
                 saved_selection = game_state.selection_history[game_state.current_path]
+                # Asegurarse de que la selección guardada no sea un encabezado
+                while saved_selection < len(items) and items[saved_selection][0] == 'console':
+                    saved_selection += 1
+                    if saved_selection >= len(items):
+                        saved_selection = 0
                 game_state.selected = saved_selection if saved_selection < len(items) else 0
             else:
                 game_state.selected = 0
@@ -556,8 +567,14 @@ def folder_menu(joystick, game_state):
                     if hat != last_hat or current_time - last_input_time > repeat_delay:
                         if hat[1] == 1:  # Arriba
                             game_state.selected = max(0, game_state.selected - 1)
+                            # Saltar encabezados de consola
+                            while game_state.selected > 0 and items[game_state.selected][0] == 'console':
+                                game_state.selected -= 1
                         elif hat[1] == -1:  # Abajo
                             game_state.selected = min(len(items) - 1, game_state.selected + 1)
+                            # Saltar encabezados de consola
+                            while game_state.selected < len(items) - 1 and items[game_state.selected][0] == 'console':
+                                game_state.selected += 1
                         elif hat[0] == -1:  # Izquierda (buscar)
                             game_state.search_active = True
                             game_state.search_text = ""
@@ -573,16 +590,18 @@ def folder_menu(joystick, game_state):
             elif event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 0:  # Botón A
                     item = items[game_state.selected]
-                    game_state.selection_history[game_state.current_path] = game_state.selected
-                    
-                    if item[0] == 'folder':
-                        game_state.path_stack.append(game_state.current_path)
-                        game_state.current_path = item[2]
-                        reload_items = True
-                    elif item[0] == 'rom':
-                        launch_game(item[2], joystick)
-                        screen = pygame.display.set_mode((640, 480), pygame.FULLSCREEN)
-                        pygame.mouse.set_visible(False)
+                    # Asegurarse de que no estamos seleccionando un encabezado
+                    if item[0] != 'console':
+                        game_state.selection_history[game_state.current_path] = game_state.selected
+                        
+                        if item[0] == 'folder':
+                            game_state.path_stack.append(game_state.current_path)
+                            game_state.current_path = item[2]
+                            reload_items = True
+                        elif item[0] == 'rom':
+                            launch_game(item[2], joystick)
+                            screen = pygame.display.set_mode((640, 480), pygame.FULLSCREEN)
+                            pygame.mouse.set_visible(False)
                 
                 elif event.button == 1:  # Botón B
                     if len(game_state.path_stack) > 1:
