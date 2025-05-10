@@ -332,7 +332,7 @@ def load_game_cover(game_name):
     return None
 
 def load_roms_and_folders(current_path):
-    """Carga las ROMs de todas las subcarpetas y las clasifica por consola"""
+    """Carga las ROMs de todas las subcarpetas agrupadas por consola"""
     items = []
     console_map = {
         '.gba': 'GBA',
@@ -350,11 +350,9 @@ def load_roms_and_folders(current_path):
                 for ext, console in console_map.items():
                     if file.lower().endswith(ext):
                         full_path = os.path.join(root, file)
-                        # Obtener nombre sin extensión
-                        display_name = os.path.splitext(file)[0]
                         if console not in roms_by_console:
                             roms_by_console[console] = []
-                        roms_by_console[console].append(('rom', display_name, full_path))
+                        roms_by_console[console].append(('rom', file, full_path))
                         break
         
         # Ordenar las consolas y sus ROMs
@@ -372,9 +370,7 @@ def load_roms_and_folders(current_path):
                 if os.path.isdir(full_path):
                     items.append(('folder', item, full_path))
                 elif os.path.isfile(full_path) and item.lower().endswith((".smc", ".sfc", ".gba", ".nes")):
-                    # Obtener nombre sin extensión
-                    display_name = os.path.splitext(item)[0]
-                    items.append(('rom', display_name, full_path))
+                    items.append(('rom', item, full_path))
         except Exception as e:
             print(f"Error al cargar contenido de {current_path}: {e}")
             return [], current_path
@@ -490,8 +486,8 @@ def draw_menu(screen, items, selected, current_path, game_state):
 
     # Primera fila de controles
     screen.blit(a_text, (125, controls_area.y + 30))
-    screen.blit(nav_text, (275, controls_area.y + 30))
-    screen.blit(search_text, (425, controls_area.y + 30))
+    screen.blit(nav_text, (225, controls_area.y + 30))
+    screen.blit(search_text, (400, controls_area.y + 30))
     
     # Botón de apagado (centrado)
     screen.blit(shutdown_text, (320 - shutdown_text.get_width()//2, controls_area.y + 60))
@@ -667,9 +663,7 @@ def search_roms(search_text, root_dir):
             for ext in console_map.keys():
                 if file_lower.endswith(ext) and search_lower in file_lower:
                     console = console_map[ext]
-                    # Obtener nombre sin extensión
-                    display_name = os.path.splitext(file)[0]
-                    results.append(('rom', display_name, os.path.join(root, file), console))
+                    results.append(('rom', file, os.path.join(root, file), console))
                     break
     
     # Ordenar primero por consola, luego por nombre de archivo
@@ -683,7 +677,6 @@ def draw_search_results(screen, game_state):
     title_font = pygame.font.Font(None, 30)
     controls_font = pygame.font.Font(None, 26)
     console_font = pygame.font.Font(None, 28)
-
     
     # Dibujar fondo
     screen.fill(COLOR_BG)
