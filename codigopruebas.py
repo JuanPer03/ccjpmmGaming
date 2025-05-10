@@ -683,6 +683,7 @@ def draw_search_results(screen, game_state):
     title_font = pygame.font.Font(None, 30)
     controls_font = pygame.font.Font(None, 26)
     console_font = pygame.font.Font(None, 28)
+
     
     # Dibujar fondo
     screen.fill(COLOR_BG)
