@@ -284,31 +284,39 @@ def show_copy_confirmation(screen, copied_files):
 # Funciones relacionadas con el menú principal
 # ==============================================
 
-def load_game_cover(game_name, current_path):
+def load_game_cover(game_name):
     """Carga la carátula del juego si existe"""
     # Obtener el nombre del juego sin extensión
     base_name = os.path.splitext(game_name)[0]
     
-    # Buscar en las carpetas de covers para cada extensión
-    extensions = ['.png', '.jpg', '.jpeg']
-    for ext in ['.gba', '.nes', '.smc', '.sfc']:
+    # Mapeo de extensiones a carpetas de consola
+    console_map = {
+        '.gba': 'GBA',
+        '.nes': 'NES',
+        '.smc': 'SNES',
+        '.sfc': 'SNES'
+    }
+    
+    # Determinar la consola basada en la extensión del archivo
+    for ext, console in console_map.items():
         if game_name.lower().endswith(ext):
-            console = {
-                '.gba': 'GBA',
-                '.nes': 'NES',
-                '.smc': 'SNES',
-                '.sfc': 'SNES'
-            }[ext]
-            cover_dir = f"/home/ccjpmmGaming/Retroconsole/covers/GBA-NES-SNES/{console}"
-            
-            # Buscar archivo de carátula (puede tener diferentes extensiones)
-            for img_ext in extensions:
-                cover_path = os.path.join(cover_dir, f"{base_name}{img_ext}")
-                if os.path.exists(cover_path):
-                    try:
-                        return pygame.image.load(cover_path)
-                    except:
-                        return None
+            cover_dir = f"/home/ccjpmmGaming/Retroconsole/covers/{console}"
+            break
+    else:
+        return None  # No es una extensión de juego conocida
+    
+    # Buscar archivo de carátula (puede tener diferentes extensiones)
+    extensions = ['.png', '.jpg', '.jpeg', '.webp']
+    for ext in extensions:
+        cover_path = os.path.join(cover_dir, f"{base_name}{ext}")
+        if os.path.exists(cover_path):
+            try:
+                # Cargar y devolver la imagen
+                image = pygame.image.load(cover_path)
+                return image
+            except pygame.error as e:
+                print(f"No se pudo cargar la carátula {cover_path}: {e}")
+                return None
     return None
 
 def load_roms_and_folders(current_path):
@@ -359,11 +367,11 @@ def load_roms_and_folders(current_path):
 
 def draw_menu(screen, items, selected, current_path, game_state):
     """Dibuja el menú principal con las ROMs agrupadas por consola"""
-    # Pre-renderizar fuentes
-    font = pygame.font.Font(None, 32)
+    # Configuración de fuentes (modificado el tamaño para la lista de ROMs)
+    font = pygame.font.Font(None, 28)  # Reducido de 32 a 28 para las ROMs
     title_font = pygame.font.Font(None, 30)
     controls_font = pygame.font.Font(None, 26)
-    console_font = pygame.font.Font(None, 28)
+    console_font = pygame.font.Font(None, 28)  # Fuente para los encabezados de consola
     
     # Dibujar fondo
     screen.fill(COLOR_BG)
@@ -382,25 +390,33 @@ def draw_menu(screen, items, selected, current_path, game_state):
     screen.blit(title, (320 - title.get_width()//2, 20))
     
     # Área de carátula (parte superior derecha)
-    cover_area = pygame.Rect(400, 70, 200, 150)  # Ajusta estas coordenadas según necesites
+    cover_area = pygame.Rect(400, 70, 200, 150)  # x, y, width, height
     
     # Cargar y mostrar carátula si el item seleccionado es una ROM
     if items and selected < len(items):
         item = items[selected]
         if item[0] == 'rom':
-            cover_image = load_game_cover(item[1], current_path)
+            cover_image = load_game_cover(item[1])
             if cover_image:
-                # Escalar la imagen para que quepa en el área
-                cover_image = pygame.transform.scale(cover_image, (cover_area.width, cover_area.height))
-                screen.blit(cover_image, cover_area.topleft)
+                # Escalar manteniendo relación de aspecto
+                img_width, img_height = cover_image.get_size()
+                ratio = min(cover_area.width/img_width, cover_area.height/img_height)
+                new_size = (int(img_width * ratio), int(img_height * ratio))
+                cover_image = pygame.transform.scale(cover_image, new_size)
+                
+                # Centrar la imagen en el área
+                pos_x = cover_area.x + (cover_area.width - new_size[0]) // 2
+                pos_y = cover_area.y + (cover_area.height - new_size[1]) // 2
+                screen.blit(cover_image, (pos_x, pos_y))
             else:
                 # Mostrar placeholder si no hay carátula
                 pygame.draw.rect(screen, (50, 50, 50), cover_area)
-                no_cover = font.render("No carátula", True, COLOR_TEXT)
+                no_cover = font.render("Sin carátula", True, COLOR_TEXT)
                 screen.blit(no_cover, (cover_area.centerx - no_cover.get_width()//2, 
-                                      cover_area.centery - no_cover.get_height()//2))
+                                     cover_area.centery - no_cover.get_height()//2))
+                # Dibujar borde
+                pygame.draw.rect(screen, COLOR_HIGHLIGHT, cover_area, 2)
     
-    # Resto del código de draw_menu permanece igual...
     # Área de resultados (parte central)
     results_area = pygame.Rect(0, title_area.height, 640, 300)
     
@@ -426,14 +442,13 @@ def draw_menu(screen, items, selected, current_path, game_state):
                 # Mostrar encabezado de consola
                 console_header = console_font.render(f"--- {name} ---", True, COLOR_HIGHLIGHT)
                 screen.blit(console_header, (50, y_pos))
+                y_pos += 30
             else:
-                # Mostrar ROM
+                # Mostrar ROM (con fuente más pequeña)
                 text = font.render(f"{prefix}{name}", True, color)
                 screen.blit(text, (50, y_pos))
-            
-            y_pos += 30
+                y_pos += 28  # Espaciado reducido para coincidir con fuente más pequeña
     
-    # Resto del código de draw_menu (área de controles) permanece igual...
     # Área de controles (parte inferior)
     controls_area = pygame.Rect(0, 400, 640, 80)
     pygame.draw.rect(screen, COLOR_SEARCH_BG, controls_area)
