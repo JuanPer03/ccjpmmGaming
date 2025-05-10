@@ -285,9 +285,9 @@ def show_copy_confirmation(screen, copied_files):
 # ==============================================
 
 def load_game_cover(game_name):
-    """Carga la carátula del juego si existe, comparando nombres sin importar mayúsculas/minúsculas"""
-    # Obtener el nombre base del juego sin extensión y en minúsculas para comparación
-    base_name = os.path.splitext(game_name)[0].lower()
+    """Carga la carátula del juego si existe"""
+    # Obtener el nombre del juego sin extensión
+    base_name = os.path.splitext(game_name)[0]
     
     # Mapeo de extensiones a carpetas de consola
     console_map = {
@@ -305,34 +305,18 @@ def load_game_cover(game_name):
     else:
         return None  # No es una extensión de juego conocida
     
-    # Buscar archivos de carátula en el directorio
+    # Buscar archivo de carátula (puede tener diferentes extensiones)
     extensions = ['.png', '.jpg', '.jpeg', '.webp']
-    
-    # Primero intentar coincidencia exacta (sin extensión)
     for ext in extensions:
         cover_path = os.path.join(cover_dir, f"{base_name}{ext}")
         if os.path.exists(cover_path):
             try:
+                # Cargar y devolver la imagen
                 image = pygame.image.load(cover_path)
                 return image
             except pygame.error as e:
                 print(f"No se pudo cargar la carátula {cover_path}: {e}")
-    
-    # Si no se encontró coincidencia exacta, buscar coincidencia parcial
-    for filename in os.listdir(cover_dir):
-        # Obtener el nombre del archivo sin extensión y en minúsculas
-        cover_base = os.path.splitext(filename)[0].lower()
-        
-        # Verificar si el nombre del juego está contenido en el nombre de la carátula
-        if base_name in cover_base:
-            cover_path = os.path.join(cover_dir, filename)
-            try:
-                image = pygame.image.load(cover_path)
-                return image
-            except pygame.error as e:
-                print(f"No se pudo cargar la carátula {cover_path}: {e}")
-                continue
-    
+                return None
     return None
 
 def load_roms_and_folders(current_path):
