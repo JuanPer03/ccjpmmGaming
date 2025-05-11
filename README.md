@@ -31,7 +31,8 @@ Mediante la ejecucion de un programa desarrollado en python, implementando funci
 - Monitor: Cualquier monitor con coneccion HDMI
 - Audio: Bocinas externas con conexion jack de 3.5 mm 
 
-## 📂 Estructura del Proyecto  
+## 📂 Estructura del Proyecto 
+``plaintext 
 /Carpeta raiz  
 ├── doc/  # Documentos que contienen el tutorial de instalacion pero con enfasis de desarrollo diferentes
 ├────SistemasEmbebidos-CHJC-ProyectoUSB					# Tutorial de instalacion con enfasis en la parte de deteccion de USB
@@ -61,5 +62,7 @@ se debe de ejecutar desde el usuario local la linea siguiente:
 Esto instalara automaticamente las librerias necesarias y extraera las carpetas necesarias para el correcto funcionamiento de la retroconsola.
 
 ## 🔗 Links de interes
+``plaintext 
 Link al video evidencia de funcionamiento: https://youtu.be/znDL1qFbyX8
+
 Link al repositorio en gituhb del proyecto: https://github.com/JuanPer03/ccjpmmGaming
