@@ -3,6 +3,18 @@
 			█░░ █░░ ░░█ █░░█ █░▀░█ █░▀░█ ▒█░▄▄ █▄▄█ █░▀░█ ▀█▀ █░░█ █░▀█ 
 			▀▀▀ ▀▀▀ █▄█ █▀▀▀ ▀░░░▀ ▀░░░▀ ▒█▄▄█ ▀░░▀ ▀░░░▀ ▀▀▀ ▀░░▀ ▀▀▀▀
 
+## 💻 Instalacion
+Para ejecutar la instalacion se debe de tomar en cuenta lo siguiente:
+	- Instalacion limpia de Raspios Lite 
+	- Tener conexion a internet
+
+Tomando en cuenta que los archivos necesarios para la instalacion estan ubicados en la rama Instalacion del repositorio
+se debe de ejecutar desde el usuario local la linea siguiente:
+
+	$ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/JuanPer03/ccjpmmGaming/Instalacion/instalacion.sh)"
+
+Esto instalara automaticamente las librerias necesarias y extraera las carpetas necesarias para el correcto funcionamiento de la retroconsola.
+
 # Proyecto Final - Sistemas Embebidos
 
 **Materia:** 	Sistemas Embebidos 
@@ -31,7 +43,7 @@ Mediante la ejecucion de un programa desarrollado en python, implementando funci
 - Monitor: Cualquier monitor con coneccion HDMI
 - Audio: Bocinas externas con conexion jack de 3.5 mm 
 
-## 📂 Estructura del Proyecto 
+## 📂 Estructura del Proyecto  
 /Carpeta raiz  
 ├── doc/  # Documentos que contienen el tutorial de instalacion pero con enfasis de desarrollo diferentes
 ├────SistemasEmbebidos-CHJC-ProyectoUSB					# Tutorial de instalacion con enfasis en la parte de deteccion de USB
@@ -48,19 +60,6 @@ Mediante la ejecucion de un programa desarrollado en python, implementando funci
 ├── LICENSE     				# Licencia
 └── README.md   				# Este archivo  
 
-## 💻 Instalacion
-Para ejecutar la instalacion se debe de tomar en cuenta lo siguiente:
-	- Instalacion limpia de Raspios Lite 
-	- Tener conexion a internet
-
-Tomando en cuenta que los archivos necesarios para la instalacion estan ubicados en la rama Instalacion del repositorio
-se debe de ejecutar desde el usuario local la linea siguiente:
-
-	$ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/JuanPer03/ccjpmmGaming/Instalacion/instalacion.sh)"
-
-Esto instalara automaticamente las librerias necesarias y extraera las carpetas necesarias para el correcto funcionamiento de la retroconsola.
-
 ## 🔗 Links de interes
 Link al video evidencia de funcionamiento: https://youtu.be/znDL1qFbyX8
-
 Link al repositorio en gituhb del proyecto: https://github.com/JuanPer03/ccjpmmGaming
